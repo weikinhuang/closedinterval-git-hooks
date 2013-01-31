@@ -16,6 +16,7 @@ else
 fi
 
 PHP_COLOR=57
+PHPCS_COLOR=197
 JS_COLOR=36
 CSS_COLOR=33
 
@@ -37,10 +38,18 @@ fi
 # http://forum.soft32.com/linux2/Bug-409179-DASH-Settings-IFS-work-properly-ftopict70039.html
 IFS='
 '
+
+# error output
 PHP_ERRORS=''
+PHPCS_ERRORS=''
 JS_ERRORS=''
 CSS_ERRORS=''
 error=0
+
+# phpcs path
+PHPCS_PATH=$(git config --get code.phpcs)
+PHPCS_STANDARD="Snap"
+
 # get a list of staged files
 for line in $(git diff-index --cached --full-index $against); do
 	# split needed values
@@ -58,12 +67,20 @@ for line in $(git diff-index --cached --full-index $against); do
 
 	# check files with php extension against the php linter
 	if [[ "$ext" == "php" ]]; then
+		modified_file="$(git cat-file -p $sha)"
 		# check the staged file content for syntax errors using php -l (lint)
-		result=$(git cat-file -p $sha | php -l 2>&1)
+		result=$(echo "$modified_file" | php -l 2>&1)
 		if [[ $? -ne 0 ]] || [[ "$(uname)" = MINGW* && -n $(echo "$result" | grep -v "No syntax errors detected") ]]; then
 			error=1
 			# Swap back in correct filenames
 			PHP_ERRORS="$(echo "$PHP_ERRORS"; echo "PHP $(echo "$result" | grep "error: " | sed -e "s/in - on/in $clean_filename on/g")")"
+		fi
+		if [[ -n "$PHPCS_PATH" ]]; then
+			phpcs_result="$(echo "$modified_file" | php "$PHPCS_PATH" --standard=$PHPCS_STANDARD --warning-severity=0 --report=emacs 2>&1)"
+			if [[ $? -ne 0 ]]; then
+				error=1
+				PHPCS_ERRORS="$(echo "$PHPCS_ERRORS"; echo "$phpcs_result" | sed 's/^STDIN:\([0-9]\+\):[0-9]\+: error - \(.\+\)$/PHPCS error: \2. in '$clean_filename' on line \1/g')"
+			fi
 		fi
 	fi
 
@@ -95,6 +112,11 @@ if [[ $error -eq 1 ]]; then
 	# colorize php output
 	echo -en "\e[38;5;${PHP_COLOR}m";
 	echo -n "$PHP_ERRORS"
+	echo -en "\e[0m";
+
+	# colorize phpcs output
+	echo -en "\e[38;5;${PHPCS_COLOR}m";
+	echo -n "$PHPCS_ERRORS"
 	echo -en "\e[0m";
 
 	# colorize js output
