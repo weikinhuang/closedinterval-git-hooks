@@ -46,6 +46,10 @@ JS_ERRORS=''
 CSS_ERRORS=''
 error=0
 
+# output formatting
+PHP_ERROR_FORMAT='PHP {{type}} error: [{{file}}:{{line}}] {{message}}.'
+PHPCS_ERROR_FORMAT='PHP CS {{type}}:    [{{file}}:{{line}}] {{message}}.'
+
 # phpcs path
 PHPCS_PATH=$(git config --get code.phpcs)
 PHPCS_STANDARD="Snap"
@@ -72,16 +76,26 @@ for line in $(git diff-index --cached --full-index $against); do
 		result=$(echo "$modified_file" | php -l 2>&1)
 		if [[ $? -ne 0 ]] || [[ "$(uname)" = MINGW* && -n $(echo "$result" | grep -v "No syntax errors detected") ]]; then
 			error=1
-			# Swap back in correct filenames
-			msg="$(echo "PHP $(echo "$result" | grep "error: " | sed 's/^\([A-Za-z0-9]\+\) error: \(.\+\) in - on line \([0-9]\+\)/\1 error: ['$clean_filename':\3] \2./g')")"
-			PHP_ERRORS="$(echo "$PHP_ERRORS"; echo "$msg")"
+			# Format the output string
+			replacement="${PHP_ERROR_FORMAT/\{\{type\}\}/\\1}"
+			replacement="${replacement/\{\{message\}\}/\\2}"
+			replacement="${replacement/\{\{line\}\}/\\3}"
+			replacement="${replacement/\{\{file\}\}/$clean_filename}"
+			php_format='s/^\([A-Za-z0-9]\+\) error: \(.\+\) in - on line \([0-9]\+\)$/'$replacement'/g'
+			PHP_ERRORS="$(echo "$PHP_ERRORS"; echo "$result" | grep "error: " | sed "$php_format")"
 		fi
+
 		if [[ -n "$PHPCS_PATH" ]]; then
 			phpcs_result="$(echo "$modified_file" | php "$PHPCS_PATH" --standard=$PHPCS_STANDARD --warning-severity=0 --report=emacs 2>&1)"
 			if [[ $? -ne 0 ]]; then
 				error=1
-				msg="$(echo "$phpcs_result" | sed 's/^STDIN:\([0-9]\+\):[0-9]\+: error - \(.\+\)$/PHP CS error:    ['$clean_filename':\1] \2./g')"
-				PHPCS_ERRORS="$(echo "$PHPCS_ERRORS"; echo "$msg")"
+				# Format the output string
+				replacement="${PHPCS_ERROR_FORMAT/\{\{type\}\}/error}"
+				replacement="${replacement/\{\{message\}\}/\\2}"
+				replacement="${replacement/\{\{line\}\}/\\1}"
+				replacement="${replacement/\{\{file\}\}/$clean_filename}"
+				phpcs_format='s/^STDIN:\([0-9]\+\):[0-9]\+: error - \(.\+\)$/'$replacement'/g'
+				PHPCS_ERRORS="$(echo "$PHPCS_ERRORS"; echo "$phpcs_result" | sed "$phpcs_format")"
 			fi
 		fi
 	fi
