@@ -1,5 +1,10 @@
 // cli formatter for git hook
-var CSSLint = require("./csslint-node").CSSLint;
+var CSSLint = require("./csslint-node").CSSLint, config;
+try {
+	config = require("./csslint.config.js");
+} catch (e) {
+	config = {};
+}
 CSSLint.addFormatter({
 	// format information
 	id : "cli-oneline",
@@ -35,6 +40,8 @@ CSSLint.addFormatter({
 		var messages = results.messages, output = "";
 		options = options || {};
 		filename = (filename || "-").replace(/\\/g, "/").replace(/^\.\//, "");
+		var formatString = config.format || "CSS Lint {{type}}: {{message}} in {{file}} on line {{line}}";
+		formatString = formatString.replace(/\{\{file\}\}/g, filename);
 
 		if (messages.length === 0) {
 			return options.quiet ? "" : "\n\ncsslint: No errors in " + filename + ".";
@@ -42,7 +49,10 @@ CSSLint.addFormatter({
 
 		CSSLint.Util.forEach(messages, function(message, i) {
 			if (!message.rollup && message.evidence) {
-				output += "CSS Lint " + message.type + ": " + message.message + " in " + filename.replace(/\\/g, "/") + " on line " + message.line + "\n";
+				var msg = formatString.replace(/\{\{message\}\}/g, message.message);
+				msg = msg.replace(/\{\{line\}\}/g, message.line);
+				msg = msg.replace(/\{\{type\}\}/g, message.type);
+				output += msg + "\n";
 			}
 		});
 

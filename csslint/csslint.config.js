@@ -4,6 +4,7 @@ module.exports = {
 		ignore : "floats,ids,adjoining-classes,regex-selectors",
 		quiet : true
 	},
+	format : "CSS Lint {{type}}:  [{{file}}:{{line}}] {{message}}",
 	skippedFiles : [
 	],
 	skippedDirectories : [

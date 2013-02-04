@@ -1,10 +1,10 @@
 //#! /usr/bin/env node
 
-var jshintConfig, jshint = require("./jshint.js");
+var jshint = require("./jshint.js"), config;
 try {
-	jshintConfig = require("./jshint.config.js");
+	config = require("./jshint.config.js");
 } catch (e) {
-	jshintConfig = {};
+	config = {};
 }
 var fs = require("fs");
 
@@ -64,13 +64,13 @@ var processor = {
 
 	isSkippedFile : function(filename) {
 		filename = (filename || "-").replace(/\\/g, "/").replace(/^\.\//, "");
-		if (jshintConfig.skippedFiles && jshintConfig.skippedFiles.indexOf(filename) !== -1) {
+		if (config.skippedFiles && config.skippedFiles.indexOf(filename) !== -1) {
 			return true;
 		}
-		if (jshintConfig.skippedDirectories) {
+		if (config.skippedDirectories) {
 			var filenameParts = filename.split("/").slice(0, -1);
 			if (filenameParts.some(function(v, i) {
-				return jshintConfig.skippedDirectories.indexOf(filenameParts.slice(0, i + 1).join("/")) !== -1;
+				return config.skippedDirectories.indexOf(filenameParts.slice(0, i + 1).join("/")) !== -1;
 			})) {
 				return true;
 			}
@@ -123,12 +123,17 @@ var processor = {
 			return 0;
 		}
 		filename = (filename || "-").replace(/\\/g, "/").replace(/^\.\//, "");
-		if (!jshint(src, jshintConfig.options || {})) {
+		var formatString = config.format || "JS Lint {{type}}: {{message}} in {{file}} on line {{line}}";
+		formatString = formatString.replace(/\{\{file\}\}/g, filename);
+		formatString = formatString.replace(/\{\{type\}\}/g, "error");
+		if (!jshint(src, config.options || {})) {
 			jshint.errors.forEach(function(e) {
 				if (!e || !e.evidence) {
 					return;
 				}
-				processor.print("JS Lint error: " + e.reason + " in " + filename + " on line " + e.line);
+				var msg = formatString.replace(/\{\{message\}\}/g, e.reason);
+				msg = msg.replace(/\{\{line\}\}/g, e.line);
+				processor.print(msg);
 			});
 			return jshint.errors.length;
 		}

@@ -12,6 +12,7 @@ module.exports = {
 			"$", "jQuery", "Classify", "Avalon", "Page", "Highcharts", "Recaptcha", "alert", "SWFUpload"
 		]
 	},
+	format : "JS Lint {{type}}:   [{{file}}:{{line}}] {{message}}",
 	skippedFiles : [
 		".build/csslint/csslint-node.js",
 		".build/jshint/jshint.js",
