@@ -85,7 +85,7 @@ for line in $(git diff-index --cached --full-index $against); do
 			PHP_ERRORS="$(echo "$PHP_ERRORS"; echo "$result" | grep "error: " | sed "$php_format")"
 		fi
 
-		if [[ -n "$PHPCS_PATH" ]]; then
+		if [[ -n "$PHPCS_PATH" ]] && [[ $filename != classes/vendor/* ]]; then
 			phpcs_result="$(echo "$modified_file" | php "$PHPCS_PATH" --standard=$PHPCS_STANDARD --warning-severity=0 --report=emacs 2>&1)"
 			if [[ $? -ne 0 ]]; then
 				error=1
