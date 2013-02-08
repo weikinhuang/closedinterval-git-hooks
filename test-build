@@ -39,7 +39,7 @@ PHP_ERROR_FORMAT='PHP {{type}} error: [{{file}}:{{line}}] {{message}}.'
 PHPCS_ERROR_FORMAT='PHP CS {{type}}:    [{{file}}:{{line}}] {{message}}.'
 
 # phpcs path
-PHPCS_PATH=$(git config --get code.phpcs)
+PHPCS_PATH='.build/phpcs.phar'
 PHPCS_STANDARD="PSR2"
 
 # error output
