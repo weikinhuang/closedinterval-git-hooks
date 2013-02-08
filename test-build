@@ -9,10 +9,10 @@
 
 # necessary check for initial commit
 if git rev-parse --verify HEAD >/dev/null 2>&1; then
-	against=HEAD
+	AGAINST_REV=HEAD
 else
 	# Initial commit: diff against an empty tree object
-	against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+	AGAINST_REV=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 fi
 
 if ! type php >/dev/null 2>&1; then
@@ -56,9 +56,24 @@ JS_COLOR=36
 CSS_COLOR=33
 
 # variables
+GIT_ARGS=( "ls-tree" "-r" "--name-only" )
+SEARCH_ROOT=
+for arg in "$@"; do
+	case "$arg" in
+	--diff|-d)
+		GIT_ARGS=( "diff" "--name-only" "--" )
+		;;
+	--staged|-s)
+		GIT_ARGS=( "diff" "--staged" "--name-only" "--" )
+		;;
+	*)
+		SEARCH_ROOT=$1
+	esac
+done
+
 INDICATOR_LENGTH=65
 COUNTER=0
-FILES=$(git ls-tree -r --name-only $against $1)
+FILES=$(git "${GIT_ARGS[@]}" "$AGAINST_REV" "$SEARCH_ROOT")
 FILE_COUNT=$(echo "$FILES" | wc -l)
 
 # get a list of staged files
