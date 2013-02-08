@@ -58,28 +58,20 @@ CSS_COLOR=33
 # variables
 INDICATOR_LENGTH=65
 COUNTER=0
-FILES=$(git diff-index --cached --full-index $against)
+FILES=$(git ls-tree -r --name-only $against $1)
 FILE_COUNT=$(echo "$FILES" | wc -l)
 
 # get a list of staged files
 for line in $FILES; do
 	# split needed values
-	sha=$(echo $line | cut -d' ' -f4)
-	temp=$(echo $line | cut -d' ' -f5)
-	status=$(echo $temp | cut -d'	' -f1)
-	filename=$(echo $temp | cut -d'	' -f2)
+	filename=$line
 	ext=$(echo $filename | sed 's/^.*\.//')
 	clean_filename="$(echo $filename | sed 's/\//\\\//g')"
 	indicator='.'
 
-	# do not check deleted files
-	if [[ $status = "D" ]]; then
-		continue
-	fi
-
 	# check files with php extension against the php linter
 	if [[ "$ext" == "php" ]]; then
-		modified_file="$(git cat-file -p $sha)"
+		modified_file="$(cat "$filename")"
 		# check the staged file content for syntax errors using php -l (lint)
 		result=$(echo "$modified_file" | php -l 2>&1)
 		if [[ $? -ne 0 ]] || [[ "$(uname)" = MINGW* && -n $(echo "$result" | grep -v "No syntax errors detected") ]]; then
@@ -113,7 +105,7 @@ for line in $FILES; do
 	# check files with js or html extension against the js linter
 	if [[ "$ext" == "js" || "$ext" == "html" ]]; then
 		# check the staged file content for syntax errors using jshint
-		result=$(git cat-file -p $sha | node .build/jshint/lint-hook.js "$filename" 2>&1)
+		result=$(cat "$filename" | node .build/jshint/lint-hook.js "$filename" 2>&1)
 		if [[ $? -ne 0 ]]; then
 			HAS_ERROR=1
 			indicator='E'
@@ -125,7 +117,7 @@ for line in $FILES; do
 	# check files with css or html extension against the css linter
 	if [[ "$ext" == "css" || "$ext" == "html" ]]; then
 		# check the staged file content for syntax errors using csslint
-		result=$(git cat-file -p $sha | node .build/csslint/lint-hook.js "$filename" 2>&1)
+		result=$(cat "$filename" | node .build/csslint/lint-hook.js "$filename" 2>&1)
 		if [[ $? -ne 0 ]]; then
 			HAS_ERROR=1
 			indicator='E'
