@@ -39,8 +39,8 @@ PHP_ERROR_FORMAT='PHP {{type}} error: [{{file}}:{{line}}] {{message}}.'
 PHPCS_ERROR_FORMAT='PHP CS {{type}}:    [{{file}}:{{line}}] {{message}}.'
 
 # phpcs path
-PHPCS_PATH='.build/phpcs.phar'
-PHPCS_STANDARD="PSR2"
+PHPCS_PATH='.build\phpcs.phar'
+PHPCS_STANDARD=".build/phpcs-ruleset.xml"
 
 # error output
 PHP_ERRORS=''
@@ -112,7 +112,7 @@ for line in $FILES; do
 				replacement="${replacement/\{\{line\}\}/\\1}"
 				replacement="${replacement/\{\{file\}\}/$clean_filename}"
 				phpcs_format='s/^STDIN:\([0-9]\+\):[0-9]\+: error - \(.\+\)$/'$replacement'/g'
-				PHPCS_ERRORS="$(echo "$PHPCS_ERRORS"; echo "$phpcs_result" | sed "$phpcs_format")"
+				PHPCS_ERRORS="$(echo "$PHPCS_ERRORS"; echo "$phpcs_result" | grep " error - " | sed "$phpcs_format")"
 			fi
 		fi
 	fi
