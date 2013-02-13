@@ -39,7 +39,7 @@ PHP_ERROR_FORMAT='PHP {{type}} error: [{{file}}:{{line}}] {{message}}.'
 PHPCS_ERROR_FORMAT='PHP CS {{type}}:    [{{file}}:{{line}}] {{message}}.'
 
 # phpcs path
-PHPCS_PATH='.build\phpcs.phar'
+PHPCS_PATH='.build/phpcs.phar'
 PHPCS_STANDARD=".build/phpcs-ruleset.xml"
 
 # error output
