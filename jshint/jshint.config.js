@@ -9,7 +9,16 @@ module.exports = {
 		eqnull : true,
 		scripturl : true,
 		predef : [
-			"$", "jQuery", "Classify", "Avalon", "Page", "Highcharts", "Recaptcha", "alert", "SWFUpload"
+			"$",
+			"jQuery",
+			"Classify",
+			"Avalon",
+			"Page",
+			"Highcharts",
+			"Recaptcha",
+			"alert",
+			"confirm",
+			"SWFUpload"
 		]
 	},
 	format : "JS Lint {{type}}:   [{{file}}:{{line}}] {{message}}",
