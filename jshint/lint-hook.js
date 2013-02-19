@@ -18,5 +18,5 @@ function readFromPipe(callback) {
 readFromPipe(function(src) {
 	"use strict";
 	var filename = process.argv[2];
-	jshint.quit(jshint.lint(jshint.readFile(filename), filename) === 0 ? 0 : 1);
+	jshint.quit(jshint.lint(jshint.readFile(filename, src), filename) === 0 ? 0 : 1);
 });

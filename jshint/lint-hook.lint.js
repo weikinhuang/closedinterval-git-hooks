@@ -103,11 +103,11 @@ var processor = {
 		return lines.join("\n").replace(/\{\$(\w+\.)*\w+\}/g, "{}");
 	},
 
-	readFile : function(filename) {
+	readFile : function(filename, src) {
 		if(processor.isSkippedFile(filename)) {
 			return "";
 		}
-		return processor.formatFile(filename, processor.loadFile(filename));
+		return processor.formatFile(filename, arguments.length === 1 ? processor.loadFile(filename) : src);
 	},
 
 	loadFile : function(filename) {
@@ -119,7 +119,7 @@ var processor = {
 	},
 
 	lint : function(src, filename) {
-		if (!src) {
+		if (!src.trim()) {
 			return 0;
 		}
 		filename = (filename || "-").replace(/\\/g, "/").replace(/^\.\//, "");
