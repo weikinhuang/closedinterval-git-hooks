@@ -133,7 +133,7 @@ for line in $FILES; do
 	if [[ "$ext" == "css" || "$ext" == "html" ]]; then
 		# check the staged file content for syntax errors using csslint
 		result=$(cat "$filename" | node .build/csslint/lint-hook.js "$filename" 2>&1)
-		if [[ $? -ne 0 ]]; then
+		if [[ $? -ne 0 || -n "$(echo "$result" | grep "error: ")" ]]; then
 			HAS_ERROR=1
 			indicator='E'
 			# Swap back in correct filenames
