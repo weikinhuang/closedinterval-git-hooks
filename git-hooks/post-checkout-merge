@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# force windows style symlinks when possible
+if type symlink-reflow &> /dev/null; then
+	symlink-reflow -f .
+fi
+
+rm -f tmp/class_list.json
+rm -f tmp/static/*
+
+# sync to remote server if necessary
+bash .build/sync-files
