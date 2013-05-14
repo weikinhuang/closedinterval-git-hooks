@@ -146,27 +146,31 @@ for line in $FILES; do
 done
 unset IFS
 
+if [[ $counter -gt 0 ]] && [[ $HAS_ERROR -eq 0 ]]; then
+	echo ""
+fi
+
 if [[ $HAS_ERROR -eq 1 ]]; then
 	# colorize php output
-	echo -en "\e[38;5;${PHP_COLOR}m";
+	echo -en "\e[38;5;${PHP_COLOR}m"
 	echo -n "$PHP_ERRORS"
-	echo -en "\e[0m";
+	echo -en "\e[0m"
 
 	# colorize phpcs output
-	echo -en "\e[38;5;${PHPCS_COLOR}m";
+	echo -en "\e[38;5;${PHPCS_COLOR}m"
 	echo -n "$PHPCS_ERRORS"
-	echo -en "\e[0m";
+	echo -en "\e[0m"
 
 	# colorize js output
-	echo -en "\e[38;5;${JS_COLOR}m";
+	echo -en "\e[38;5;${JS_COLOR}m"
 	echo -n "$JS_ERRORS"
-	echo -en "\e[0m";
+	echo -en "\e[0m"
 
 	# colorize css output
-	echo -en "\e[38;5;${CSS_COLOR}m";
+	echo -en "\e[38;5;${CSS_COLOR}m"
 	echo -n "$CSS_ERRORS"
-	echo -en "\e[0m";
+	echo -en "\e[0m"
 
-	echo "";
+	echo ""
 	exit 1
 fi
