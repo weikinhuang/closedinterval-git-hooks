@@ -140,7 +140,6 @@ for line in $FILES; do
 			# Swap back in correct filenames
 			CSS_ERRORS=$(echo "$CSS_ERRORS"; echo "$result" | grep "error: ")
 		fi
-		echo "$result"
 	fi
 
 	# increment counters
