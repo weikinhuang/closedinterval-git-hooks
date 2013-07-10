@@ -39,7 +39,7 @@ PHP_ERROR_FORMAT='PHP {{type}} error: [{{file}}:{{line}}] {{message}}.'
 PHPCS_ERROR_FORMAT='PHP CS {{type}}:    [{{file}}:{{line}}] {{message}}.'
 
 # phpcs path
-PHPCS_PATH='.build/phpcs.phar'
+PHPCS_PATH='vendor/squizlabs/php_codesniffer/scripts/phpcs'
 PHPCS_STANDARD=".build/phpcs-ruleset.xml"
 
 # error output
@@ -60,6 +60,7 @@ INDICATOR_LENGTH=65
 COUNTER=0
 FILES=$(git diff-index --cached --full-index "$AGAINST_REV")
 FILE_COUNT=$(echo "$FILES" | wc -l)
+ERROR_INDICATOR="$(echo -e "\e[1m\e[1;31mE\e[0m")"
 
 # get a list of staged files
 for line in $FILES; do
@@ -84,7 +85,7 @@ for line in $FILES; do
 		result=$(echo "$modified_file" | php -l 2>&1)
 		if [[ $? -ne 0 ]] || [[ "$(uname)" = MINGW* && -n $(echo "$result" | grep -v "No syntax errors detected") ]]; then
 			HAS_ERROR=1
-			indicator='E'
+			indicator=$ERROR_INDICATOR
 			# Format the output string
 			replacement="${PHP_ERROR_FORMAT/\{\{type\}\}/\\1}"
 			replacement="${replacement/\{\{message\}\}/\\2}"
@@ -94,11 +95,11 @@ for line in $FILES; do
 			PHP_ERRORS="$(echo "$PHP_ERRORS"; echo "$result" | grep "error: " | sed "$php_format")"
 		fi
 
-		if [[ -n "$PHPCS_PATH" ]] && [[ $filename != classes/vendor/* ]]; then
+		if [[ -e "$PHPCS_PATH" ]] && [[ $filename != classes/vendor/* ]] && [[ $filename != vendor/* ]]; then
 			phpcs_result="$(echo "$modified_file" | php "$PHPCS_PATH" --standard=$PHPCS_STANDARD --warning-severity=0 --report=emacs 2>&1)"
 			if [[ $? -ne 0 ]]; then
 				HAS_ERROR=1
-				indicator='E'
+				indicator=$ERROR_INDICATOR
 				# Format the output string
 				replacement="${PHPCS_ERROR_FORMAT/\{\{type\}\}/error}"
 				replacement="${replacement/\{\{message\}\}/\\2}"
@@ -116,7 +117,7 @@ for line in $FILES; do
 		result=$(git cat-file -p $sha | node .build/jshint/lint-hook.js "$filename" 2>&1)
 		if [[ $? -ne 0 ]]; then
 			HAS_ERROR=1
-			indicator='E'
+			indicator=$ERROR_INDICATOR
 			# Swap back in correct filenames
 			JS_ERRORS=$(echo "$JS_ERRORS"; echo "$result" | grep "error: ")
 		fi
@@ -128,7 +129,7 @@ for line in $FILES; do
 		result=$(git cat-file -p $sha | node .build/csslint/lint-hook.js "$filename" 2>&1)
 		if [[ $? -ne 0 || -n "$(echo "$result" | grep "error: ")" ]]; then
 			HAS_ERROR=1
-			indicator='E'
+			indicator=$ERROR_INDICATOR
 			# Swap back in correct filenames
 			CSS_ERRORS=$(echo "$CSS_ERRORS"; echo "$result" | grep "error: ")
 		fi
