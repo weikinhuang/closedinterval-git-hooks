@@ -1,6 +1,6 @@
 //#! /usr/bin/env node
 
-var jshint = require("./jshint.js"), config;
+var jshint = require("jshint").JSHINT, config;
 try {
 	config = require("./jshint.config.js");
 } catch (e) {
