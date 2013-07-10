@@ -1,5 +1,5 @@
 // cli formatter for git hook
-var CSSLint = require("./csslint-node").CSSLint, config;
+var CSSLint = require("../node_modules/csslint/release/csslint-node").CSSLint, config;
 try {
 	config = require("./csslint.config.js");
 } catch (e) {
