@@ -4,6 +4,7 @@
 DIRECTORY="$(git rev-parse --show-toplevel)"
 CHANGE_DELAY=5
 DIRECTORY_SEPARATOR='/'
+ARGS="$@"
 
 # if we're in cygwin, clean up for windows inotifywait
 if type cygpath &> /dev/null; then
@@ -21,7 +22,8 @@ function phpunit-files() {
 	fi
 	touch "$LOCKFILE"
 	sleep $CHANGE_DELAY
-	bash vendor/bin/phpunit
+	clear
+	bash vendor/bin/phpunit $ARGS
 	rm -f "$LOCKFILE"
 }
 
