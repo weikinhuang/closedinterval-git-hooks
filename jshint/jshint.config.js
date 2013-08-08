@@ -25,12 +25,12 @@ module.exports = {
 	skippedFiles : [
 		".build/csslint/csslint-node.js",
 		".build/jshint/jshint.js",
-		"static/javascript/lib/classify.min.js",
-		"static/javascript/lib/utils.min.js"
+		"public/static/javascript/lib/classify.min.js",
+		"public/static/javascript/lib/utils.min.js"
 	],
 	skippedDirectories : [
 		".build/uglify",
-		"static/javascript/vendor",
+		"public/static/javascript/vendor",
 		"tmp"
 	]
 };
