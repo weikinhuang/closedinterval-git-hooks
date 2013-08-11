@@ -5,7 +5,7 @@
  * Encapsulates all of the CLI functionality. The api argument simply
  * provides environment-specific functionality.
  */
-var CSSLint = require("../node_modules/csslint/release/csslint-node").CSSLint;
+var CSSLint = require("../node_modules/csslint/lib/csslint-node").CSSLint;
 
 function cli(api) {
 
