@@ -18,7 +18,8 @@ module.exports = {
 			"Recaptcha",
 			"alert",
 			"confirm",
-			"SWFUpload"
+			"SWFUpload",
+			"Handlebars"
 		]
 	},
 	format : "JS Lint {{type}}:   [{{file}}:{{line}}] {{message}}",
