@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # force windows style symlinks when possible
-if type symlink-reflow &> /dev/null; then
+if type symlink-reflow &> /dev/null && ! grep 'winsymlinks:native' <<< $CYGWIN &> /dev/null; then
 	symlink-reflow -f .
 fi
 

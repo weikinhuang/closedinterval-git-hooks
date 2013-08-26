@@ -41,7 +41,9 @@ rm -f "$LOCKFILE"
 
 if type inotifywait &> /dev/null; then
 
-inotifywait -mrq --format '%e %w %f' \
+inotifywait -mrq \
+--exclude .git \
+--format '%e %w %f' \
 "$DIRECTORY" \
 | \
 while read event path file; do
