@@ -1,7 +1,0 @@
-{
-	"noBinLinks" : true,
-	"devDependencies" : {
-		"jshint": "*",
-		"csslint": "*"
-	}
-}
