@@ -15,7 +15,6 @@ module.exports = {
 			"Avalon",
 			"Page",
 			"Highcharts",
-			"Recaptcha",
 			"alert",
 			"confirm",
 			"SWFUpload",
