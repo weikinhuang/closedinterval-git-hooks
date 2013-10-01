@@ -18,7 +18,8 @@ module.exports = {
 			"alert",
 			"confirm",
 			"SWFUpload",
-			"Handlebars"
+			"Handlebars",
+			"angular"
 		]
 	},
 	format : "JS Lint {{type}}:   [{{file}}:{{line}}] {{message}}",
