@@ -18,7 +18,6 @@ module.exports = {
 			"alert",
 			"confirm",
 			"SWFUpload",
-			"Handlebars",
 			"angular"
 		]
 	},

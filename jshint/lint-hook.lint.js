@@ -96,7 +96,7 @@ var processor = {
 			} else {
 				lines[lines.length] = "";
 			}
-			if (l.indexOf("<script") > -1 && (l.indexOf('text/x-template') === -1 && l.indexOf('text/html') === -1)) {
+			if (l.indexOf("<script") > -1 && (l.indexOf('text/ng-template') === -1 && l.indexOf('text/html') === -1)) {
 				isInScript = true;
 			}
 		});
