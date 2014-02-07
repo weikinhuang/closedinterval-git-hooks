@@ -8,5 +8,7 @@ fi
 rm -f tmp/class_list.json
 rm -f tmp/static/*
 
+node_modules/.bin/bower update || true
+
 # sync to remote server if necessary
 bash .build/sync-files
