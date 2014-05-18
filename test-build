@@ -86,7 +86,7 @@ for line in $FILES; do
 	indicator='.'
 
 	# check files with php extension against the php linter
-	if [[ "$ext" == "php" ]]; then
+	if [[ "$ext" == "php" || "$ext" == "phtml" ]]; then
 		modified_file="$(cat "$filename")"
 		# check the staged file content for syntax errors using php -l (lint)
 		result=$(echo "$modified_file" | php -l 2>&1)
@@ -119,7 +119,7 @@ for line in $FILES; do
 	fi
 
 	# check files with js or html extension against the js linter
-	if [[ "$ext" == "js" || "$ext" == "html" ]]; then
+	if [[ "$ext" == "js" || "$ext" == "html" || "$ext" == "phtml" ]]; then
 		# check the staged file content for syntax errors using jshint
 		result=$(cat "$filename" | node .build/jshint/lint-hook.js "$filename" 2>&1)
 		if [[ $? -ne 0 ]]; then
@@ -131,7 +131,7 @@ for line in $FILES; do
 	fi
 
 	# check files with css or html extension against the css linter
-	if [[ "$ext" == "css" || "$ext" == "html" ]]; then
+	if [[ "$ext" == "css" || "$ext" == "html" || "$ext" == "phtml" ]]; then
 		# check the staged file content for syntax errors using csslint
 		result=$(cat "$filename" | node .build/csslint/lint-hook.js "$filename" 2>&1)
 		if [[ $? -ne 0 || -n "$(echo "$result" | grep "error: ")" ]]; then
