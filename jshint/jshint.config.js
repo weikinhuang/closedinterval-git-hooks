@@ -30,7 +30,11 @@ module.exports = {
 	],
 	skippedDirectories : [
 		".build/uglify",
+		"vendor",
+		"public/static/vendor",
 		"public/static/javascript/vendor",
+		"public/static/javascript/lib",
+		"node_modules",
 		"tmp"
 	]
 };

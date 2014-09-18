@@ -114,10 +114,11 @@ for line in $FILES; do
 	# check files with js or html extension against the js linter
 	if [[ "$ext" == "js" || "$ext" == "html" || "$ext" == "phtml" ]]; then
 		# check the staged file content for syntax errors using jshint
-		result=$(git cat-file -p $sha | node .build/jshint/lint-hook.js "$filename" 2>&1)
+		result=$(node .build/jshint/lint-hook.js "$filename" "$(git cat-file -p $sha)" 2>&1)
 		if [[ $? -ne 0 ]]; then
 			HAS_ERROR=1
 			indicator=$ERROR_INDICATOR
+			echo "$result"
 			# Swap back in correct filenames
 			JS_ERRORS=$(echo "$JS_ERRORS"; echo "$result" | grep "error: ")
 		fi

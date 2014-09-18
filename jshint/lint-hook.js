@@ -4,15 +4,7 @@ var jshint = require("./lint-hook.lint.js");
 
 function readFromPipe(callback) {
 	"use strict";
-	var stdin = process.openStdin();
-	stdin.setEncoding("utf8");
-	var text = "";
-	stdin.on("data", function(chunk) {
-		text += chunk;
-	});
-	stdin.on("end", function() {
-		callback(text);
-	});
+	callback(process.argv[3]);
 }
 
 readFromPipe(function(src) {
