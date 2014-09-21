@@ -8,7 +8,23 @@ fi
 rm -f tmp/class_list.json
 rm -f tmp/static/*
 
-(node_modules/.bin/bower update 2>&1 >/dev/null &) || true
+if [[ "$1" != "$2" ]]; then
+	# update npm dependencies
+	if type npm &> /dev/null; then
+		npm install --quiet &
+	fi
+
+	# update npm dependencies
+	if type bower &> /dev/null; then
+		bower install --quiet &
+	fi
+
+	# update composer dependencies
+	if type composer &> /dev/null; then
+		(composer install --no-interaction --dry-run 2>&1 | grep -v "Warning: This development build of composer" | sed 1,2d | grep "Installing\|Updating\|Removing" >/dev/null) && \
+			composer install --no-interaction --quiet 2>&1 &
+	fi
+fi
 
 # sync to remote server if necessary
 bash .build/sync-files
