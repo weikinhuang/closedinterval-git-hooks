@@ -15,14 +15,12 @@ else
 	AGAINST_REV=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 fi
 
-if ! type php >/dev/null 2>&1; then
-	echo "PHP Syntax check failed:"
-	echo "PHP binary does not exist or is not in path: php"
-	echo "You can bypass this hook with the --no-verify option"
-	exit 1
+NODE_BIN="$(which node 2>/dev/null)"
+if type cygpath >/dev/null 2>&1; then
+	NODE_BIN="$(cygpath -u "c:/Program Files/nodejs/node.exe")"
 fi
 
-if ! type node >/dev/null 2>&1; then
+if ! type "$NODE_BIN" >/dev/null 2>&1; then
 	echo "JS Syntax check failed:"
 	echo "NodeJs binary does not exist or is not in path: node"
 	echo "You can bypass this hook with the --no-verify option"
@@ -34,26 +32,9 @@ fi
 IFS='
 '
 
-# output formatting
-PHP_ERROR_FORMAT='PHP {{type}} error: [{{file}}:{{line}}] {{message}}.'
-PHPCS_ERROR_FORMAT='PHP CS {{type}}:    [{{file}}:{{line}}] {{message}}.'
-
-# phpcs path
-PHPCS_PATH='vendor/squizlabs/php_codesniffer/scripts/phpcs'
-PHPCS_STANDARD=".build/phpcs-ruleset.xml"
-
 # error output
-PHP_ERRORS=''
-PHPCS_ERRORS=''
-JS_ERRORS=''
-CSS_ERRORS=''
+ERRORS=''
 HAS_ERROR=0
-
-# colors
-PHP_COLOR=57
-PHPCS_COLOR=197
-JS_COLOR=36
-CSS_COLOR=33
 
 # variables
 INDICATOR_LENGTH=65
@@ -61,6 +42,7 @@ COUNTER=0
 FILES=$(git diff-index --cached --full-index "$AGAINST_REV")
 FILE_COUNT=$(echo "$FILES" | wc -l)
 ERROR_INDICATOR="$(echo -e "\e[1m\e[1;31mE\e[0m")"
+TMP_FILE=.git/pre-commit-tmpfile
 
 # get a list of staged files
 for line in $FILES; do
@@ -78,62 +60,15 @@ for line in $FILES; do
 		continue
 	fi
 
-	# check files with php extension against the php linter
-	if [[ "$ext" == "php" || "$ext" == "phtml" ]]; then
-		modified_file="$(git cat-file -p $sha)"
-		# check the staged file content for syntax errors using php -l (lint)
-		result=$(echo "$modified_file" | php -l 2>&1)
-		if [[ $? -ne 0 ]] || [[ "$(uname)" = MINGW* && -n $(echo "$result" | grep -v "No syntax errors detected") ]]; then
-			HAS_ERROR=1
-			indicator=$ERROR_INDICATOR
-			# Format the output string
-			replacement="${PHP_ERROR_FORMAT/\{\{type\}\}/\\1}"
-			replacement="${replacement/\{\{message\}\}/\\2}"
-			replacement="${replacement/\{\{line\}\}/\\3}"
-			replacement="${replacement/\{\{file\}\}/$clean_filename}"
-			php_format='s/^\([A-Za-z0-9]\+\) error: \(.\+\) in - on line \([0-9]\+\)$/'$replacement'/g'
-			PHP_ERRORS="$(echo "$PHP_ERRORS"; echo "$result" | grep "error: " | sed "$php_format")"
-		fi
-
-		if [[ -e "$PHPCS_PATH" ]] && [[ $filename != classes/vendor/* ]] && [[ $filename != vendor/* ]]; then
-			phpcs_result="$(echo "$modified_file" | php "$PHPCS_PATH" --standard=$PHPCS_STANDARD --warning-severity=0 --report=emacs 2>&1)"
-			if [[ $? -ne 0 ]]; then
-				HAS_ERROR=1
-				indicator=$ERROR_INDICATOR
-				# Format the output string
-				replacement="${PHPCS_ERROR_FORMAT/\{\{type\}\}/error}"
-				replacement="${replacement/\{\{message\}\}/\\2}"
-				replacement="${replacement/\{\{line\}\}/\\1}"
-				replacement="${replacement/\{\{file\}\}/$clean_filename}"
-				phpcs_format='s/^STDIN:\([0-9]\+\):[0-9]\+: error - \(.\+\)$/'$replacement'/g'
-				PHPCS_ERRORS="$(echo "$PHPCS_ERRORS"; echo "$phpcs_result" | grep " error - " | sed "$phpcs_format")"
-			fi
-		fi
-	fi
-
-	# check files with js or html extension against the js linter
-	if [[ "$ext" == "js" || "$ext" == "html" || "$ext" == "phtml" ]]; then
-		# check the staged file content for syntax errors using jshint
-		result=$(node .build/jshint/lint-hook.js "$filename" "$(git cat-file -p $sha)" 2>&1)
-		if [[ $? -ne 0 ]]; then
-			HAS_ERROR=1
-			indicator=$ERROR_INDICATOR
-			echo "$result"
-			# Swap back in correct filenames
-			JS_ERRORS=$(echo "$JS_ERRORS"; echo "$result" | grep "error: ")
-		fi
-	fi
-
-	# check files with css or html extension against the css linter
-	if [[ "$ext" == "css" || "$ext" == "html" || "$ext" == "phtml" ]]; then
-		# check the staged file content for syntax errors using csslint
-		result=$(git cat-file -p $sha | node .build/csslint/lint-hook.js "$filename" 2>&1)
-		if [[ $? -ne 0 || -n "$(echo "$result" | grep "error: ")" ]]; then
-			HAS_ERROR=1
-			indicator=$ERROR_INDICATOR
-			# Swap back in correct filenames
-			CSS_ERRORS=$(echo "$CSS_ERRORS"; echo "$result" | grep "error: ")
-		fi
+	# check the staged file content for syntax errors using jshint
+	git cat-file -p $sha > $TMP_FILE
+	result=$("$NODE_BIN" .build/pre-commit-check.js "$filename" "$TMP_FILE" 2>&1)
+	if [[ $? -ne 0 ]]; then
+		HAS_ERROR=1
+		indicator=$ERROR_INDICATOR
+		#echo "$result"
+		# Swap back in correct filenames
+		ERRORS=$(echo "$ERRORS"; echo "$result")
 	fi
 
 	# increment counters
@@ -148,31 +83,17 @@ for line in $FILES; do
 done
 unset IFS
 
+rm -f "$TMP_FILE"
+
 if [[ $counter -gt 0 ]] && [[ $HAS_ERROR -eq 0 ]]; then
 	echo ""
 fi
 
 if [[ $HAS_ERROR -eq 1 ]]; then
 	# colorize php output
-	echo -en "\e[38;5;${PHP_COLOR}m"
-	echo -n "$PHP_ERRORS"
-	echo -en "\e[0m"
-
-	# colorize phpcs output
-	echo -en "\e[38;5;${PHPCS_COLOR}m"
-	echo -n "$PHPCS_ERRORS"
-	echo -en "\e[0m"
-
-	# colorize js output
-	echo -en "\e[38;5;${JS_COLOR}m"
-	echo -n "$JS_ERRORS"
-	echo -en "\e[0m"
-
-	# colorize css output
-	echo -en "\e[38;5;${CSS_COLOR}m"
-	echo -n "$CSS_ERRORS"
-	echo -en "\e[0m"
-
+	echo -n "$ERRORS"
 	echo ""
 	exit 1
 fi
+
+exit 1
