@@ -9,6 +9,9 @@ var less = require("./hook-actions/less");
 var csslint = require("./hook-actions/csslint");
 
 base.read().then(function(data) {
+	if (base.isIgnored(data.filename)) {
+		return q(true);
+	}
 	var extension = data.filename.split(".").pop();
 	switch (extension) {
 		case "js":
@@ -37,7 +40,7 @@ base.read().then(function(data) {
 				return csslint(data);
 			});
 	}
-	return q.resolve();
+	return q(true);
 }).then(function() {
 	base.done();
 }, function() {

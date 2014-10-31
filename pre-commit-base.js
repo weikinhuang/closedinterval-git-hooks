@@ -2,6 +2,16 @@
 
 var q = require("q");
 var fs = require("fs");
+var minimatch = require("minimatch");
+var ignorePatterns = [];
+try {
+	ignorePatterns = fs.readFileSync(".precommitignore", {
+		encoding : "utf-8"
+	}).replace(/\r/g, "").split(/\n/).filter(function(v) {
+		return !!v;
+	});
+} catch (e) {
+}
 
 module.exports = {
 	write : function(data) {
@@ -22,6 +32,14 @@ module.exports = {
 		} catch (e) {
 		}
 		return config;
+	},
+	isIgnored : function(file) {
+		return ignorePatterns.some(function(pattern) {
+			return minimatch(file, pattern, {
+				nocase : true,
+				matchBase : true
+			});
+		});
 	},
 	extractScripts : function(src) {
 		var lines = [], isInBlock = false;
