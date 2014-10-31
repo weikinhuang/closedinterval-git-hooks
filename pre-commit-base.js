@@ -13,6 +13,16 @@ module.exports = {
 	writeError : function(type, file, line, message) {
 		this.writeLine(type + " error: [" + file + ":" + line + "] " + message);
 	},
+	getConfig : function(file) {
+		var config = {};
+		try {
+			config = JSON.parse(fs.readFileSync(file, {
+				encoding : "utf-8"
+			}));
+		} catch (e) {
+		}
+		return config;
+	},
 	extractScripts : function(src) {
 		var lines = [], isInScript = false;
 		src.replace(/\r/g, "").split("\n").forEach(function(l) {

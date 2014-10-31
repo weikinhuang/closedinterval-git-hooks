@@ -40,7 +40,7 @@ HAS_ERROR=0
 INDICATOR_LENGTH=65
 COUNTER=0
 FILES=$(git diff-index --cached --full-index "$AGAINST_REV")
-FILE_COUNT=$(echo "$FILES" | wc -l)
+FILE_COUNT=$(echo "$FILES" | cut -d ' ' -f 5 | grep -v ^D | wc -l)
 ERROR_INDICATOR="$(echo -e "\e[1m\e[1;31mE\e[0m")"
 TMP_FILE=.git/pre-commit-tmpfile
 

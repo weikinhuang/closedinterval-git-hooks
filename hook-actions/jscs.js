@@ -3,14 +3,8 @@
 var q = require("q");
 var path = require("path");
 var base = require(path.join(__dirname, "..", "pre-commit-base"));
-var jscsChecker = require( "jscs/lib/checker" ), config = {};
-var fs = require("fs");
-try {
-	config = JSON.parse(fs.readFileSync(".jscsrc", {
-		encoding : "utf-8"
-	}));
-} catch (e) {
-}
+var jscsChecker = require("jscs/lib/checker");
+var config = base.getConfig(".jscsrc");
 
 module.exports = function(data) {
 	var defer = q.defer();
