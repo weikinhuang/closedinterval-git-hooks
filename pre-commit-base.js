@@ -24,21 +24,41 @@ module.exports = {
 		return config;
 	},
 	extractScripts : function(src) {
-		var lines = [], isInScript = false;
+		var lines = [], isInBlock = false;
 		src.replace(/\r/g, "").split("\n").forEach(function(l) {
 			// we're at the end of the script tag
 			if (l.indexOf("</script") > -1) {
 				lines[lines.length] = "";
-				isInScript = false;
+				isInBlock = false;
 				return;
 			}
-			if (isInScript) {
+			if (isInBlock) {
 				lines[lines.length] = l;
 			} else {
 				lines[lines.length] = "";
 			}
 			if (l.indexOf("<script") > -1 && (l.indexOf("text/ng-template") === -1 && l.indexOf("text/html") === -1)) {
-				isInScript = true;
+				isInBlock = true;
+			}
+		});
+		return lines.join("\n").replace(/\{\$(\w+\.)*\w+\}/g, "{}");
+	},
+	extractStyles : function(src) {
+		var lines = [], isInBlock = false;
+		src.replace(/\r/g, "").split("\n").forEach(function(l) {
+			// we're at the end of the style tag
+			if (l.indexOf("</style") > -1) {
+				lines[lines.length] = "";
+				isInBlock = false;
+				return;
+			}
+			if (isInBlock) {
+				lines[lines.length] = l;
+			} else {
+				lines[lines.length] = "";
+			}
+			if (l.indexOf("<style") > -1) {
+				isInBlock = true;
 			}
 		});
 		return lines.join("\n").replace(/\{\$(\w+\.)*\w+\}/g, "{}");
