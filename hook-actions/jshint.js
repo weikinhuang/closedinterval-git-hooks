@@ -8,7 +8,7 @@ var config = base.getConfig(".jshintrc");
 
 module.exports = function(data) {
 	var defer = q.defer();
-	if (!jshint(data.src, config || {})) {
+	if (!jshint(data.src, config || {}, config.globals || {})) {
 		jshint.errors.forEach(function(e) {
 			if (!e || !e.evidence) {
 				return;
