@@ -1,11 +1,21 @@
 #!/bin/bash
 
-PREV_REF=$1
-CURR_REF=$2
-if [[ $3 == 1 ]]; then
+GIT_HOOK=$(basename $0)
+if [[ $GIT_HOOK == "post-checkout" ]]; then
+	PREV_REF=$1
+	CURR_REF=$2
+	if [[ $3 == 1 ]]; then
+		FLAG_TYPE="branch"
+	else
+		FLAG_TYPE="file"
+	fi
+elif [[ $GIT_HOOK == "post-merge" ]]; then
+	PREV_REF='HEAD@{1}'
+	CURR_REF="HEAD"
 	FLAG_TYPE="branch"
 else
-	FLAG_TYPE="file"
+	echo "Unknown hook: ${GIT_HOOK}"
+	exit 1
 fi
 
 # list changed files
@@ -20,6 +30,7 @@ if [[ $FLAG_TYPE == "branch" ]]; then
 
 	# update npm dependencies only if package.json has changed
 	if ( type npm && echo "$FILES" | grep ^package.json ) &> /dev/null; then
+		>&2 echo -e "\e[34m----- package.json changed updating npm -----\e[0m"
 		npm install --loglevel=error
 		npm prune
 	fi
@@ -33,6 +44,7 @@ if [[ $FLAG_TYPE == "branch" ]]; then
 		fi
 
 		if [[ -n $BOWER_BIN ]]; then
+			>&2 echo -e "\e[34m----- bower.json changed updating bower -----\e[0m"
 			$BOWER_BIN install --loglevel=error
 			$BOWER_BIN prune
 		fi
