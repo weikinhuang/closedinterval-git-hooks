@@ -2,33 +2,39 @@
 
 PREV_REF=$1
 CURR_REF=$2
-FLAG_TYPE=$3
+if [[ $3 == 1 ]]; then
+	FLAG_TYPE="branch"
+else
+	FLAG_TYPE="file"
+fi
 
 # list changed files
-FILES=$(git diff --name-status "$PREV_REF" "$CURR_REF" | awk '{ print $2 }')
+FILES=$(git diff --name-only "$PREV_REF" "$CURR_REF")
 
-# force windows style symlinks when possible
-if type symlink-reflow &> /dev/null && ! grep 'winsymlinks:native' <<< $CYGWIN &> /dev/null; then
-	symlink-reflow -f .
-fi
-
-# update npm dependencies only if package.json has changed
-if ( type npm && echo "$FILES" | grep ^package.json ) &> /dev/null; then
-	npm install --loglevel=error
-	npm prune
-fi
-
-# update bower dependencies only if bower.json has changed
-if ( echo "$FILES" | grep ^bower.json ) &> /dev/null; then
-	if type ./node_modules/.bin/bower &> /dev/null; then
-		BOWER_BIN=./node_modules/.bin/bower
-	elif type bower &> /dev/null; then
-		BOWER_BIN=bower
+# don't bother when just checking out a file
+if [[ $FLAG_TYPE == "branch" ]]; then
+	# force windows style symlinks when possible
+	if type symlink-reflow &> /dev/null && ! grep 'winsymlinks:native' <<< $CYGWIN &> /dev/null; then
+		symlink-reflow -f .
 	fi
 
-	if [[ -n $BOWER_BIN ]]; then
-		$BOWER_BIN install --loglevel=error
-		$BOWER_BIN prune
+	# update npm dependencies only if package.json has changed
+	if ( type npm && echo "$FILES" | grep ^package.json ) &> /dev/null; then
+		npm install --loglevel=error
+		npm prune
 	fi
 
+	# update bower dependencies only if bower.json has changed
+	if ( echo "$FILES" | grep ^bower.json ) &> /dev/null; then
+		if type ./node_modules/.bin/bower &> /dev/null; then
+			BOWER_BIN=./node_modules/.bin/bower
+		elif type bower &> /dev/null; then
+			BOWER_BIN=bower
+		fi
+
+		if [[ -n $BOWER_BIN ]]; then
+			$BOWER_BIN install --loglevel=error
+			$BOWER_BIN prune
+		fi
+	fi
 fi
