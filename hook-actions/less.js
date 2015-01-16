@@ -1,11 +1,11 @@
 "use strict";
 
-var q = require("q");
+var Bluebird = require("bluebird");
 var path = require("path");
 var base = require(path.join(__dirname, "..", "pre-commit-base"));
 var less = require("less");
 
-function attemptRender(filename, src, defer, globals) {
+function attemptRender(filename, src, resolve, reject, globals) {
 	globals = globals || {};
 	less.render(src, {
 		// Specify search paths for @import directives
@@ -21,14 +21,14 @@ function attemptRender(filename, src, defer, globals) {
 			if ((/^variable @(.+?) is undefined$/).test(e.message)) {
 				// ignore undef variable
 				globals[(/^variable @(.+?) is undefined$/).exec(e.message)[1]] = "1";
-				attemptRender(filename, src, defer, globals);
+				attemptRender(filename, src, resolve, reject, globals);
 				return;
 			}
 			base.writeError("LESS", filename, e.line, e.message);
-			defer.reject();
+			reject();
 			return;
 		}
-		defer.resolve({
+		resolve({
 			filename : filename,
 			src : css
 		});
@@ -36,7 +36,7 @@ function attemptRender(filename, src, defer, globals) {
 }
 
 module.exports = function(data) {
-	var defer = q.defer();
-	attemptRender(data.filename, data.src, defer);
-	return defer.promise;
+	return new Bluebird(function(resolve, reject) {
+		attemptRender(data.filename, data.src, resolve, reject);
+	});
 };

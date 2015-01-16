@@ -1,6 +1,6 @@
 "use strict";
 
-var q = require("q");
+var Bluebird = require("bluebird");
 var fs = require("fs");
 var minimatch = require("minimatch");
 var ignorePatterns = [];
@@ -82,15 +82,13 @@ module.exports = {
 		return lines.join("\n").replace(/\{\$(\w+\.)*\w+\}/g, "{}");
 	},
 	read : function() {
-		var defer = q.defer();
 		// filename, src
-		defer.resolve({
+		return Bluebird.resolve({
 			filename : process.argv[2],
 			src : fs.readFileSync(process.argv[3], {
 				encoding : "utf-8"
 			})
 		});
-		return defer.promise;
 	},
 	done : function(code) {
 		setTimeout(function() {

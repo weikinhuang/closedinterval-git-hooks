@@ -1,23 +1,23 @@
 "use strict";
 
-var q = require("q");
+var Bluebird = require("bluebird");
 var path = require("path");
 var base = require(path.join(__dirname, "..", "pre-commit-base"));
 var jshint = require("jshint").JSHINT;
 var config = base.getConfig(".jshintrc");
 
 module.exports = function(data) {
-	var defer = q.defer();
-	if (!jshint(data.src, config || {}, config.globals || {})) {
-		jshint.errors.forEach(function(e) {
-			if (!e || !e.evidence) {
-				return;
-			}
-			base.writeError("JSHINT", data.filename, e.line, e.reason);
-		});
-		defer.reject();
-	} else {
-		defer.resolve(data);
-	}
-	return defer.promise;
+	return new Bluebird(function(resolve, reject) {
+		if (!jshint(data.src, config || {}, config.globals || {})) {
+			jshint.errors.forEach(function(e) {
+				if (!e || !e.evidence) {
+					return;
+				}
+				base.writeError("JSHINT", data.filename, e.line, e.reason);
+			});
+			reject();
+		} else {
+			resolve(data);
+		}
+	});
 };
