@@ -2,6 +2,7 @@
 
 var Bluebird = require("bluebird");
 var fs = require("fs");
+var util = require("util");
 var minimatch = require("minimatch");
 var ignorePatterns = [];
 try {
@@ -24,11 +25,20 @@ module.exports = {
 		this.writeLine(type + " error: [" + file + ":" + line + "] " + message);
 	},
 	getConfig : function(file) {
-		var config = {};
+		var config = {},
+			subConfig;
 		try {
 			config = JSON.parse(fs.readFileSync(file, {
-				encoding : "utf-8"
+				encoding : "utf8"
 			}));
+			if (config.extends) {
+				subConfig = JSON.parse(fs.readFileSync(config.extends, {
+					encoding : "utf8"
+				}));
+				util._extend(subConfig, config);
+				delete subConfig.extends;
+				config = subConfig;
+			}
 		} catch (e) {
 		}
 		return config;
@@ -86,7 +96,7 @@ module.exports = {
 		return Bluebird.resolve({
 			filename : process.argv[2],
 			src : fs.readFileSync(process.argv[3], {
-				encoding : "utf-8"
+				encoding : "utf8"
 			})
 		});
 	},
