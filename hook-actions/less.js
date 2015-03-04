@@ -30,7 +30,7 @@ function attemptRender(filename, src, resolve, reject, globals) {
 		}
 		resolve({
 			filename : filename,
-			src : css
+			src : css.css || css
 		});
 	});
 }
