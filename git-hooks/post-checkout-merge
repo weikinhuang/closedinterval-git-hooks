@@ -1,7 +1,7 @@
 #!/bin/bash
 
-GIT_HOOK=$(basename $0)
-if [[ $GIT_HOOK == "post-checkout" ]]; then
+if [[ $# -eq 3 ]]; then
+	# post-checkout
 	PREV_REF=$1
 	CURR_REF=$2
 	if [[ $3 == 1 ]]; then
@@ -9,12 +9,13 @@ if [[ $GIT_HOOK == "post-checkout" ]]; then
 	else
 		FLAG_TYPE="file"
 	fi
-elif [[ $GIT_HOOK == "post-merge" ]]; then
+elif [[ $# -eq 0 ]]; then
+	# post merge
 	PREV_REF='HEAD@{1}'
 	CURR_REF="HEAD"
 	FLAG_TYPE="branch"
 else
-	echo "Unknown hook: ${GIT_HOOK}"
+	echo "Unknown hook: $(basename $0)"
 	exit 1
 fi
 
