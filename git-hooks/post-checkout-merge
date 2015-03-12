@@ -9,7 +9,7 @@ if [[ $# -eq 3 ]]; then
 	else
 		FLAG_TYPE="file"
 	fi
-elif [[ $# -eq 0 ]]; then
+elif [[ $# -eq 1 ]]; then
 	# post merge
 	PREV_REF='HEAD@{1}'
 	CURR_REF="HEAD"
