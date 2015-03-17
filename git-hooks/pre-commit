@@ -17,7 +17,11 @@ fi
 
 NODE_BIN="$(which node 2>/dev/null)"
 if type cygpath >/dev/null 2>&1; then
-	NODE_BIN="$(cygpath -u "c:/Program Files/nodejs/node.exe")"
+	if [[ -e "c:/Program Files/iojs/iojs.exe" ]]; then
+		NODE_BIN="$(cygpath -u "c:/Program Files/iojs/iojs.exe")"
+	else
+		NODE_BIN="$(cygpath -u "c:/Program Files/nodejs/node.exe")"
+	fi
 fi
 
 if ! type "$NODE_BIN" >/dev/null 2>&1; then
