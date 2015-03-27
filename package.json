@@ -11,6 +11,9 @@
   "version": "1.0.0",
   "private": true,
   "noBinLinks": true,
+  "scripts": {
+    "postinstall": "node ./make-links"
+  },
   "dependencies": {
     "bluebird": "2.9.15",
     "csslint": "0.10.0",
