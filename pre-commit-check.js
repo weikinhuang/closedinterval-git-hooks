@@ -2,7 +2,8 @@
 "use strict";
 
 var Bluebird = require("bluebird"),
-	base = require("./pre-commit-base");
+	base = require("./pre-commit-base"),
+	precommitConfig = base.getConfig(".precommitrc");
 
 base.read()
 	.then(function(data) {
@@ -10,6 +11,7 @@ base.read()
 			return Bluebird.resolve(true);
 		}
 		var extension = data.filename.split(".").pop(),
+			validators = [],
 			fileChecker;
 		try {
 			fileChecker = require("./filetypes/file-" + extension);
@@ -17,11 +19,19 @@ base.read()
 			// file not found
 			return Bluebird.resolve(true);
 		}
-		return fileChecker(data);
+		if (precommitConfig.rules &&
+			precommitConfig.rules[extension] &&
+			Array.isArray(precommitConfig.rules[extension])
+		) {
+			validators = precommitConfig.rules[extension];
+		}
+		return fileChecker(data, validators);
 	})
 	.then(function() {
+		base.flushMessages();
 		base.done();
 	})
 	.catch(function() {
+		base.flushMessages();
 		base.done(1);
 	});

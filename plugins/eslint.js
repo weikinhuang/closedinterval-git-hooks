@@ -7,6 +7,11 @@ var config = base.getConfig(".eslintrc");
 
 module.exports = function(data) {
 	return new Bluebird(function(resolve, reject) {
+		// html files have trailing whitespace chars
+		if ((/\.html$/).test(data.filename)) {
+			config.rules["no-multiple-empty-lines"] = 0;
+		}
+
 		var messages = eslint.verify(data.src, config, data.filename),
 			hasErrors = false;
 
