@@ -1,0 +1,9 @@
+/.buildpath
+/.cache
+/.idea
+/.project
+/.settings
+/.externalToolBuilders
+
+node_modules/*
+npm-debug.log
