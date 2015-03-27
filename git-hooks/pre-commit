@@ -47,6 +47,10 @@ FILES=$(git diff-index --cached --full-index "$AGAINST_REV")
 FILE_COUNT=$(echo "$FILES" | wc -l)
 ERROR_INDICATOR="$(echo -e "\e[1m\e[1;31mE\e[0m")"
 TMP_FILE=.git/pre-commit-tmpfile
+CHECK_SCRIPT_PATH="./pre-commit-check.js"
+if [[ -e "./node_modules/avalon-git-hooks-common/pre-commit-check.js" ]]; then
+	CHECK_SCRIPT_PATH="./node_modules/avalon-git-hooks-common/pre-commit-check.js"
+fi
 
 function printcounter() {
 	indicator="$1"
@@ -87,15 +91,15 @@ for line in $FILES; do
 
 	# check the staged file content for syntax errors using jshint
 	git cat-file -p $sha > $TMP_FILE
-	result=$("$NODE_BIN" .build/pre-commit-check.js "$filename" "$TMP_FILE" 2>&1)
+	result=$("$NODE_BIN" "$CHECK_SCRIPT_PATH" "$filename" "$TMP_FILE" 2>&1)
 	if [[ $? -ne 0 ]]; then
 		HAS_ERROR=1
 		indicator=$ERROR_INDICATOR
-		#echo "$result"
+		# echo "$result"
 		# Swap back in correct filenames
 		ERRORS=$(echo "$ERRORS"; echo "$result")
 	fi
-	
+
 	printcounter $indicator
 done
 unset IFS

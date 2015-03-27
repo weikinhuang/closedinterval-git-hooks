@@ -25,8 +25,14 @@ child_process.exec(
 			hookPath;
 		// fix cygwin path
 		if (os.platform() === "win32" && (/^\/[c-zC-Z]\//).test(gitPath)) {
-			gitPath = gitPath.replace(/^\/([c-zC-Z])\//, "$1:/");
+			gitPath = gitPath.replace(/^\/([c-zC-Z])\//, function(m, drive) {
+				return drive.toUpperCase() + ":/";
+			});
 		}
+		gitPath = path.normalize(gitPath);
+		var srcRoot = gitPath === process.cwd()
+			? ""
+			: path.join("node_modules", pkg.name);
 		hookPath = path.join(gitPath, ".git/hooks");
 		Object.keys(hookMap).forEach(function(target) {
 			var source = hookMap[target];
@@ -37,7 +43,7 @@ child_process.exec(
 				}
 				// make symlink to git hooks
 				fs.symlink(
-					path.join("../../node_modules", pkg.name, "git-hooks", source),
+					path.join("../../", srcRoot, "git-hooks", source),
 					path.join(hookPath, target),
 					function() {
 					}

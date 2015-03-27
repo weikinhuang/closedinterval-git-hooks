@@ -6,7 +6,7 @@ var util = require("util");
 var minimatch = require("minimatch");
 var ignorePatterns = [];
 try {
-	ignorePatterns = fs.readFileSync(".precommitignore")
+	ignorePatterns = fs.readFileSync(".precommitignore", "utf8")
 		.replace(/\r/g, "")
 		.split(/\n/)
 		.filter(function(v) {
@@ -29,9 +29,9 @@ module.exports = {
 		var config = {},
 			subConfig;
 		try {
-			config = JSON.parse(fs.readFileSync(file));
+			config = JSON.parse(fs.readFileSync(file, "utf8"));
 			if (config.extends) {
-				subConfig = JSON.parse(fs.readFileSync(config.extends));
+				subConfig = JSON.parse(fs.readFileSync(config.extends, "utf8"));
 				util._extend(subConfig, config);
 				delete subConfig.extends;
 				config = subConfig;
@@ -92,7 +92,7 @@ module.exports = {
 		// filename, src
 		return Bluebird.resolve({
 			filename : process.argv[2],
-			src : fs.readFileSync(process.argv[3])
+			src : fs.readFileSync(process.argv[3], "utf8")
 		});
 	},
 	done : function(code) {
