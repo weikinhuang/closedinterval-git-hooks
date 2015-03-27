@@ -1,0 +1,18 @@
+{
+  "name": "avalon-git-hooks-common",
+  "description": "Commonly used git hooks for projects",
+  "homepage": "https://www.closedinterval.com",
+  "repository": "https://github.com/weikinhuang/git-hooks-common",
+  "authors": [
+    {
+      "name": "Wei Kin Huang"
+    }
+  ],
+  "version": "1.0.0",
+  "private": true,
+  "noBinLinks": true,
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
