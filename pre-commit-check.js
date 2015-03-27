@@ -2,7 +2,6 @@
 "use strict";
 
 var Bluebird = require("bluebird"),
-	path = require("path"),
 	base = require("./pre-commit-base");
 
 base.read()
@@ -13,7 +12,7 @@ base.read()
 		var extension = data.filename.split(".").pop(),
 			fileChecker;
 		try {
-			fileChecker = require(path.join("./filetypes", "file-" + extension));
+			fileChecker = require("./filetypes/file-" + extension);
 		} catch (e) {
 			// file not found
 			return Bluebird.resolve(true);
