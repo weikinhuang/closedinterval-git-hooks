@@ -3,10 +3,10 @@
 
 var Bluebird = require("bluebird");
 var base = require("./pre-commit-base");
-var jshint = require("./hook-actions/jshint");
-var jscs = require("./hook-actions/jscs");
-var less = require("./hook-actions/less");
-var csslint = require("./hook-actions/csslint");
+var jshint = require("./plugins/jshint");
+var jscs = require("./plugins/jscs");
+var less = require("./plugins/less");
+var csslint = require("./plugins/csslint");
 
 base.read()
 	.then(function(data) {
