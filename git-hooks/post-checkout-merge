@@ -36,7 +36,7 @@ FILES=$(git diff --name-only "$PREV_REF" "$CURR_REF")
 
 # color flags
 COLOR_BLUE="$(tput setaf 4)"
-COLOR_CLEAR="$(tput sgr0)"
+COLOR_RESET="$(tput sgr0)"
 
 # don't bother when just checking out a file
 if [[ "$FLAG_TYPE" == "branch" ]]; then
@@ -47,7 +47,7 @@ if [[ "$FLAG_TYPE" == "branch" ]]; then
 
 	# update npm dependencies only if package.json has changed
 	if ( type npm && echo "$FILES" | grep ^package.json ) &> /dev/null; then
-		>&2 echo -e "${COLOR_BLUE}----- package.json changed updating npm -----${COLOR_CLEAR}"
+		>&2 echo -e "${COLOR_BLUE}----- package.json changed updating npm -----${COLOR_RESET}"
 		npm install --loglevel=error
 		npm prune
 	fi
@@ -61,7 +61,7 @@ if [[ "$FLAG_TYPE" == "branch" ]]; then
 		fi
 
 		if [[ -n "$BOWER_BIN" ]]; then
-			>&2 echo "${COLOR_BLUE}----- bower.json changed updating bower -----${COLOR_CLEAR}"
+			>&2 echo "${COLOR_BLUE}----- bower.json changed updating bower -----${COLOR_RESET}"
 			"$BOWER_BIN" install --loglevel=error
 			"$BOWER_BIN" prune
 		fi

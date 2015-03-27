@@ -40,12 +40,17 @@ IFS='
 ERRORS=''
 HAS_ERROR=0
 
+# color flags
+COLOR_RED="$(tput setaf 1)"
+COLOR_BOLD="$(tput bold)"
+COLOR_RESET="$(tput sgr0)"
+
 # variables
 INDICATOR_LENGTH=65
 COUNTER=0
 FILES=$(git diff-index --cached --full-index "$AGAINST_REV")
 FILE_COUNT=$(echo "$FILES" | wc -l)
-ERROR_INDICATOR="$(echo -e "\e[1m\e[1;31mE\e[0m")"
+ERROR_INDICATOR="${COLOR_BOLD}${COLOR_RED}E${COLOR_RESET}"
 TMP_FILE=.git/pre-commit-tmpfile
 CHECK_SCRIPT_PATH="./pre-commit-check.js"
 if [[ -e "./node_modules/avalon-git-hooks-common/pre-commit-check.js" ]]; then
