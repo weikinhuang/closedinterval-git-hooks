@@ -1,0 +1,8 @@
+{
+  "rules": {
+    "css": ["less", "csslint"],
+    "less": ["less", "csslint"],
+    "html": ["eslint", "jscs", "jshint"],
+    "js": ["eslint", "jscs", "jshint"]
+  }
+}

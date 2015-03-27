@@ -1,0 +1,35 @@
+{
+  "latedef": true,
+  "noempty": true,
+  "undef": true,
+  "strict": false,
+  "node": true,
+  "browser": true,
+  "browserify": true,
+  "jasmine": true,
+  "eqnull": true,
+  "scripturl": true,
+  "trailing": true,
+  "globals": {
+    "describe": false,
+    "xdescribe": false,
+    "it": false,
+    "xit": false,
+    "expect": false,
+    "before": false,
+    "after": false,
+    "beforeEach": false,
+    "afterEach": false
+  },
+  "predef": [
+    "describe",
+    "xdescribe",
+    "it",
+    "xit",
+    "expect",
+    "before",
+    "beforeEach",
+    "after",
+    "afterEach"
+  ]
+}
