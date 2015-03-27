@@ -36,7 +36,7 @@ child_process.exec(
 				}
 				// make symlink to git hooks
 				fs.symlink(
-					path.join(process.cwd(), "hook-actions", source),
+					path.join("git-hooks", source),
 					path.join(hookPath, target),
 					function() {
 					}
