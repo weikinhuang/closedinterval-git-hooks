@@ -3,7 +3,8 @@
 const child_process = require("child_process"),
 	fs = require("fs"),
 	os = require("os"),
-	path = require("path");
+	path = require("path"),
+	pkg = require("./package.json");
 
 var hookMap = {
 	"pre-commit" : "pre-commit",
@@ -36,7 +37,7 @@ child_process.exec(
 				}
 				// make symlink to git hooks
 				fs.symlink(
-					path.join("git-hooks", source),
+					path.join("../../node_modules", pkg.name, "git-hooks", source),
 					path.join(hookPath, target),
 					function() {
 					}
