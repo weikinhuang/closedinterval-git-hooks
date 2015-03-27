@@ -1,8 +1,7 @@
 "use strict";
 
 var Bluebird = require("bluebird");
-var path = require("path");
-var base = require(path.join(__dirname, "..", "pre-commit-base"));
+var base = require("../pre-commit-base");
 var jscsChecker = require("jscs/lib/checker");
 var config = base.getConfig(".jscsrc");
 

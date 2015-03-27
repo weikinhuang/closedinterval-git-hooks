@@ -6,11 +6,12 @@ var util = require("util");
 var minimatch = require("minimatch");
 var ignorePatterns = [];
 try {
-	ignorePatterns = fs.readFileSync(".precommitignore", {
-		encoding : "utf-8"
-	}).replace(/\r/g, "").split(/\n/).filter(function(v) {
-		return !!v;
-	});
+	ignorePatterns = fs.readFileSync(".precommitignore")
+		.replace(/\r/g, "")
+		.split(/\n/)
+		.filter(function(v) {
+			return !!v;
+		});
 } catch (e) {
 }
 
@@ -28,13 +29,9 @@ module.exports = {
 		var config = {},
 			subConfig;
 		try {
-			config = JSON.parse(fs.readFileSync(file, {
-				encoding : "utf8"
-			}));
+			config = JSON.parse(fs.readFileSync(file));
 			if (config.extends) {
-				subConfig = JSON.parse(fs.readFileSync(config.extends, {
-					encoding : "utf8"
-				}));
+				subConfig = JSON.parse(fs.readFileSync(config.extends));
 				util._extend(subConfig, config);
 				delete subConfig.extends;
 				config = subConfig;
@@ -95,9 +92,7 @@ module.exports = {
 		// filename, src
 		return Bluebird.resolve({
 			filename : process.argv[2],
-			src : fs.readFileSync(process.argv[3], {
-				encoding : "utf8"
-			})
+			src : fs.readFileSync(process.argv[3])
 		});
 	},
 	done : function(code) {
