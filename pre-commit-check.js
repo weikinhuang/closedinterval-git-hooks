@@ -1,48 +1,24 @@
 //#! /usr/bin/env node
 "use strict";
 
-var Bluebird = require("bluebird");
-var base = require("./pre-commit-base");
-var jshint = require("./plugins/jshint");
-var jscs = require("./plugins/jscs");
-var less = require("./plugins/less");
-var csslint = require("./plugins/csslint");
+var Bluebird = require("bluebird"),
+	path = require("path"),
+	base = require("./pre-commit-base");
 
 base.read()
 	.then(function(data) {
 		if (base.isIgnored(data.filename)) {
 			return Bluebird.resolve(true);
 		}
-		var extension = data.filename.split(".").pop();
-		switch (extension) {
-			case "js":
-				return jshint(data)
-					.then(function(data) {
-						return jscs(data);
-					});
-			case "css":
-				return csslint(data);
-			case "html":
-				return Bluebird.all([
-					jshint({
-						filename : data.filename,
-						src : base.extractScripts(data.src)
-					}).then(function(data) {
-						return jscs(data);
-					}),
-					csslint({
-						filename : data.filename,
-						src : base.extractStyles(data.src)
-					})
-				]).then(function() {
-					return data;
-				});
-			case "less":
-				return less(data).then(function(data) {
-					return csslint(data);
-				});
+		var extension = data.filename.split(".").pop(),
+			fileChecker;
+		try {
+			fileChecker = require(path.join("./filetypes", "file-" + extension));
+		} catch (e) {
+			// file not found
+			return Bluebird.resolve(true);
 		}
-		return Bluebird.resolve(true);
+		return fileChecker(data);
 	})
 	.then(function() {
 		base.done();
