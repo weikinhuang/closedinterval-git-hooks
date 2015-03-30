@@ -53,8 +53,8 @@ FILE_COUNT=$(echo "$FILES" | wc -l)
 ERROR_INDICATOR="${COLOR_BOLD}${COLOR_RED}E${COLOR_RESET}"
 TMP_FILE=.git/pre-commit-tmpfile
 CHECK_SCRIPT_PATH="./pre-commit-check.js"
-if [[ -e "./node_modules/avalon-git-hooks-common/pre-commit-check.js" ]]; then
-	CHECK_SCRIPT_PATH="./node_modules/avalon-git-hooks-common/pre-commit-check.js"
+if [[ -e "./node_modules/closedinterval-git-hooks/pre-commit-check.js" ]]; then
+	CHECK_SCRIPT_PATH="./node_modules/closedinterval-git-hooks/pre-commit-check.js"
 fi
 
 function printcounter() {
