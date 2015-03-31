@@ -3,22 +3,20 @@
 const childProcess = require("child_process"),
 	fs = require("fs"),
 	os = require("os"),
-	path = require("path"),
-	pkg = require("./package.json");
+	path = require("path");
 
-var hookMap = {
-	"pre-commit" : "pre-commit",
-	"post-checkout" : "post-checkout-merge",
-	"post-merge" : "post-checkout-merge"
-};
+var hooks = [
+	"pre-commit",
+	"post-checkout",
+	"post-merge"
+];
 
 // only link if not exists
 childProcess.exec(
 	"git rev-parse --show-toplevel",
 	function(err, stdout) {
 		var gitPath = (stdout || "").trim(),
-			hookPath,
-			srcRoot;
+			hookPath;
 		if (err || !gitPath) {
 			console.error("Not a git repository.");
 			process.exit(1);
@@ -31,22 +29,29 @@ childProcess.exec(
 			});
 		}
 		gitPath = path.normalize(gitPath);
-		srcRoot = gitPath === process.cwd() ? "" : path.join("node_modules", pkg.name);
 		hookPath = path.join(gitPath, ".git/hooks");
-		Object.keys(hookMap).forEach(function(target) {
-			var source = hookMap[target];
+		hooks.forEach(function(target) {
 			fs.stat(path.join(hookPath, target), function(statErr) {
-				// we only care if file doesn't exist
+				// backup the old hook
 				if (!statErr) {
-					return;
-				}
-				// make symlink to git hooks
-				fs.symlink(
-					path.join("../../", srcRoot, "git-hooks", source),
-					path.join(hookPath, target),
-					function() {
+					// delete previous backup
+					try {
+						fs.unlinkSync(path.join(hookPath, target + ".bak"));
+					} catch (e) {
+						// empty
 					}
-				);
+					try {
+						fs.renameSync(
+							path.join(hookPath, target),
+							path.join(hookPath, target + ".bak")
+						);
+					} catch (e) {
+						// empty
+					}
+				}
+				// copy hook to target
+				fs.createReadStream(path.join(__dirname, "git-hooks", "hook-master"))
+					.pipe(fs.createWriteStream(path.join(hookPath, target)));
 			});
 		});
 	}
