@@ -1,9 +1,5 @@
 #!/bin/bash
 #
-# A hook to disallow php syntax errors or js lint errors to be committed
-#
-# This is a pre-commit hook.
-#
 # To install this you can either copy or symlink it to
 # $GIT_DIR/hooks
 
@@ -23,10 +19,10 @@ if ! type "$NODE_BIN" >/dev/null 2>&1; then
 	exit 1
 fi
 
-CHECK_SCRIPT_PATH="./lib/pre-commit.js"
-if [[ -e "./node_modules/closedinterval-git-hooks/lib/pre-commit.js" ]]; then
-	CHECK_SCRIPT_PATH="./node_modules/closedinterval-git-hooks/lib/pre-commit.js"
+CHECK_SCRIPT_PATH="./index.js"
+if [[ -e "./node_modules/closedinterval-git-hooks/index.js" ]]; then
+	CHECK_SCRIPT_PATH="./node_modules/closedinterval-git-hooks/index.js"
 fi
 
-"$NODE_BIN" "$CHECK_SCRIPT_PATH" -- "$@"
+"$NODE_BIN" "$CHECK_SCRIPT_PATH" "$(basename "$0")" "$@"
 exit $?
