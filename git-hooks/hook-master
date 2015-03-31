@@ -3,14 +3,17 @@
 # To install this you can either copy or symlink it to
 # $GIT_DIR/hooks
 
+GIT_ROOT="$(git rev-parse --show-toplevel)"
 NODE_BIN="$(which node 2>/dev/null)"
 if type cygpath >/dev/null 2>&1; then
+    GIT_ROOT="$(cygpath -wa "$GIT_ROOT")"
 	if [[ -e "c:/Program Files/iojs/iojs.exe" ]]; then
 		NODE_BIN="$(cygpath -u "c:/Program Files/iojs/iojs.exe")"
 	else
 		NODE_BIN="$(cygpath -u "c:/Program Files/nodejs/node.exe")"
 	fi
 fi
+export GIT_ROOT
 
 if ! type "$NODE_BIN" >/dev/null 2>&1; then
 	echo "JS Syntax check failed:"

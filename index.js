@@ -2,7 +2,7 @@
 
 var runner;
 try {
-	runner = require("./lib/" + process.argv[2]);
+	runner = require("./lib/hooks/" + process.argv[2]);
 	runner(process.argv.slice(3))
 		.then(function() {
 			setTimeout(function() {
