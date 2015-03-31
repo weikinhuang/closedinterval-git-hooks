@@ -1,9 +1,10 @@
 "use strict";
 
-var Bluebird = require("bluebird");
-var base = require("../pre-commit-base");
-var csslint = require("csslint").CSSLint;
-var config = base.getConfig(".csslintrc");
+const Bluebird = require("bluebird"),
+	base = require("../pre-commit-base"),
+	csslint = require("csslint").CSSLint;
+
+const config = base.getConfig(".csslintrc");
 
 var rules = {};
 (config.warnings || []).forEach(function(rule) {
@@ -15,8 +16,9 @@ var rules = {};
 
 module.exports = function(data) {
 	return new Bluebird(function(resolve, reject) {
-		var result = csslint.verify(data.src, rules);
-		var hasError = false;
+		var hasError = false,
+			result = csslint.verify(data.src, rules);
+
 		if (!result || !result.messages || result.messages.length === 0) {
 			return resolve(data);
 		}

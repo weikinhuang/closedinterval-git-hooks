@@ -1,12 +1,12 @@
 "use strict";
 
-var Bluebird = require("bluebird");
-var csslint = require("../plugins/csslint");
-var less = require("../plugins/less");
+const Bluebird = require("bluebird"),
+	csslint = require("../plugins/csslint"),
+	less = require("../plugins/less");
 
 module.exports = function check(data, validators) {
-	var validations = [],
-		lessChecker;
+	var lessChecker,
+		validations = [];
 	if (~validators.indexOf("less")) {
 		lessChecker = less(data);
 		if (~validators.indexOf("csslint")) {

@@ -2,17 +2,18 @@
 "use strict";
 
 var Bluebird = require("bluebird"),
-	base = require("./pre-commit-base"),
-	precommitConfig = base.getConfig(".precommitrc");
+	base = require("./pre-commit-base");
+
+var precommitConfig = base.getConfig(".precommitrc");
 
 base.read()
 	.then(function(data) {
+		var extension = data.filename.split(".").pop(),
+			fileChecker,
+			validators = [];
 		if (base.isIgnored(data.filename)) {
 			return Bluebird.resolve(true);
 		}
-		var extension = data.filename.split(".").pop(),
-			validators = [],
-			fileChecker;
 		try {
 			fileChecker = require("./filetypes/file-" + extension);
 		} catch (e) {

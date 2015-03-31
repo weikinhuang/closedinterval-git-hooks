@@ -1,7 +1,7 @@
 "use strict";
 
-var Bluebird = require("bluebird");
-var csslint = require("../plugins/csslint");
+const Bluebird = require("bluebird"),
+	csslint = require("../plugins/csslint");
 
 module.exports = function check(data, validators) {
 	var validations = [];

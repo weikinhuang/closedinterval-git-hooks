@@ -1,9 +1,10 @@
 "use strict";
 
-var Bluebird = require("bluebird");
-var base = require("../pre-commit-base");
-var jshint = require("jshint").JSHINT;
-var config = base.getConfig(".jshintrc");
+const Bluebird = require("bluebird"),
+	base = require("../pre-commit-base"),
+	jshint = require("jshint").JSHINT;
+
+const config = base.getConfig(".jshintrc");
 
 module.exports = function(data) {
 	return new Bluebird(function(resolve, reject) {

@@ -1,19 +1,22 @@
 "use strict";
 
-var Bluebird = require("bluebird");
-var base = require("../pre-commit-base");
-var eslint = require("eslint").linter;
-var config = base.getConfig(".eslintrc");
+const Bluebird = require("bluebird"),
+	base = require("../pre-commit-base"),
+	eslint = require("eslint").linter;
+
+const config = base.getConfig(".eslintrc");
 
 module.exports = function(data) {
 	return new Bluebird(function(resolve, reject) {
+		var hasErrors = false,
+			messages;
+
 		// html files have trailing whitespace chars
 		if ((/\.html$/).test(data.filename)) {
 			config.rules["no-multiple-empty-lines"] = 0;
 		}
 
-		var messages = eslint.verify(data.src, config, data.filename),
-			hasErrors = false;
+		messages = eslint.verify(data.src, config, data.filename);
 
 		// no errors!
 		if (messages.length === 0) {

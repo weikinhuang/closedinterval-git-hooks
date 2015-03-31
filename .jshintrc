@@ -3,6 +3,7 @@
   "noempty": true,
   "undef": true,
   "strict": false,
+  "esnext": true,
   "node": true,
   "browser": true,
   "browserify": true,

@@ -1,8 +1,8 @@
 "use strict";
 
-var Bluebird = require("bluebird");
-var base = require("../pre-commit-base");
-var less = require("less");
+const Bluebird = require("bluebird"),
+	base = require("../pre-commit-base"),
+	less = require("less");
 
 function attemptRender(filename, src, resolve, reject, globals) {
 	globals = globals || {};

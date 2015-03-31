@@ -1,11 +1,13 @@
 "use strict";
 
-var Bluebird = require("bluebird");
-var fs = require("fs");
-var util = require("util");
-var minimatch = require("minimatch");
-var messages = {};
-var ignorePatterns = [];
+var Bluebird = require("bluebird"),
+	fs = require("fs"),
+	minimatch = require("minimatch"),
+	util = require("util");
+
+var ignorePatterns = [],
+	messages = {};
+
 try {
 	ignorePatterns = fs.readFileSync(".precommitignore", "utf8")
 		.replace(/\r/g, "")
@@ -14,6 +16,7 @@ try {
 			return !!v;
 		});
 } catch (e) {
+	// empty
 }
 
 function write(data) {
@@ -57,6 +60,7 @@ function getConfig(file) {
 			config = subConfig;
 		}
 	} catch (e) {
+		// empty
 	}
 	return config;
 }
@@ -71,7 +75,9 @@ function isIgnored(file) {
 }
 
 function extractScripts(src) {
-	var lines = [], isInBlock = false;
+	var isInBlock = false,
+		lines = [];
+
 	src.replace(/\r/g, "").split("\n").forEach(function(l) {
 		// we're at the end of the script tag
 		if (l.indexOf("</script") > -1) {
@@ -92,7 +98,9 @@ function extractScripts(src) {
 }
 
 function extractStyles(src) {
-	var lines = [], isInBlock = false;
+	var isInBlock = false,
+		lines = [];
+
 	src.replace(/\r/g, "").split("\n").forEach(function(l) {
 		// we're at the end of the style tag
 		if (l.indexOf("</style") > -1) {
