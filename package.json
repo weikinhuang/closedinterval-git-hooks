@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "bluebird": "2.9.21",
+    "chalk": "^1.0.0",
     "csslint": "0.10.0",
     "eslint": "0.18.0",
     "jscs": "1.12.0",

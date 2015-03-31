@@ -7,14 +7,6 @@
 # To install this you can either copy or symlink it to
 # $GIT_DIR/hooks
 
-# necessary check for initial commit
-if git rev-parse --verify HEAD >/dev/null 2>&1; then
-	AGAINST_REV=HEAD
-else
-	# Initial commit: diff against an empty tree object
-	AGAINST_REV=4b825dc642cb6eb9a060e54bf8d69288fbee4904
-fi
-
 NODE_BIN="$(which node 2>/dev/null)"
 if type cygpath >/dev/null 2>&1; then
 	if [[ -e "c:/Program Files/iojs/iojs.exe" ]]; then
@@ -31,88 +23,10 @@ if ! type "$NODE_BIN" >/dev/null 2>&1; then
 	exit 1
 fi
 
-# dash does not support $'\n':
-# http://forum.soft32.com/linux2/Bug-409179-DASH-Settings-IFS-work-properly-ftopict70039.html
-IFS='
-'
-
-# error output
-ERRORS=''
-HAS_ERROR=0
-
-# color flags
-COLOR_RED="$(tput setaf 1)"
-COLOR_BOLD="$(tput bold)"
-COLOR_RESET="$(tput sgr0)"
-
-# variables
-INDICATOR_LENGTH=65
-COUNTER=0
-FILES=$(git diff-index --cached --full-index "$AGAINST_REV")
-FILE_COUNT=$(echo "$FILES" | wc -l)
-ERROR_INDICATOR="${COLOR_BOLD}${COLOR_RED}E${COLOR_RESET}"
-TMP_FILE=.git/pre-commit-tmpfile
-CHECK_SCRIPT_PATH="./pre-commit-check.js"
-if [[ -e "./node_modules/closedinterval-git-hooks/pre-commit-check.js" ]]; then
-	CHECK_SCRIPT_PATH="./node_modules/closedinterval-git-hooks/pre-commit-check.js"
+CHECK_SCRIPT_PATH="./lib/pre-commit.js"
+if [[ -e "./node_modules/closedinterval-git-hooks/lib/pre-commit.js" ]]; then
+	CHECK_SCRIPT_PATH="./node_modules/closedinterval-git-hooks/lib/pre-commit.js"
 fi
 
-function printcounter() {
-	indicator="$1"
-	# increment counters
-	COUNTER=$((COUNTER+1))
-	echo -n $indicator
-	if [[ $(($COUNTER % $INDICATOR_LENGTH)) == 0 ]] || [[ $COUNTER == $FILE_COUNT ]]; then
-		if [[ $COUNTER == $FILE_COUNT ]]; then
-			echo -n $(printf '%'$(($INDICATOR_LENGTH - $(($COUNTER % $INDICATOR_LENGTH))))'s' '')
-		fi
-		echo " $(printf %3s $COUNTER) / $(printf %3s $FILE_COUNT)"
-	fi
-}
-
-# get a list of staged files
-for line in $FILES; do
-	# split needed values
-	#oldmode=$(echo $line | cut -d' ' -f1)
-	newmode=$(echo $line | cut -d' ' -f2)
-	#oldsha=$(echo $line | cut -d' ' -f3)
-	sha=$(echo $line | cut -d' ' -f4)
-	temp=$(echo $line | cut -d' ' -f5)
-	status=$(echo $temp | cut -d'	' -f1)
-	filename=$(echo $temp | cut -d'	' -f2)
-	indicator='.'
-
-	# do not check deleted files
-	if [[ $status = "D" ]]; then
-		printcounter D
-		continue
-	fi
-
-	# do not check symlinks
-	if [[ $newmode = "120000" ]]; then
-		printcounter L
-		continue
-	fi
-
-	# check the staged file content for syntax errors using jshint
-	git cat-file -p $sha > $TMP_FILE
-	result=$("$NODE_BIN" "$CHECK_SCRIPT_PATH" "$filename" "$TMP_FILE" 2>&1)
-	if [[ $? -ne 0 ]]; then
-		HAS_ERROR=1
-		indicator=$ERROR_INDICATOR
-		# echo "$result"
-		# Swap back in correct filenames
-		ERRORS=$(echo "$ERRORS"; echo "$result")
-	fi
-
-	printcounter $indicator
-done
-unset IFS
-
-rm -f "$TMP_FILE"
-
-if [[ $HAS_ERROR -eq 1 ]]; then
-	echo -n "$ERRORS"
-	echo ""
-	exit 1
-fi
+"$NODE_BIN" "$CHECK_SCRIPT_PATH" -- "$@"
+exit $?
