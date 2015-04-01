@@ -1,0 +1,10 @@
+/.*
+/.*/*
+*~
+*.diff
+*.patch
+/*.html
+/*.test.*
+
+node_modules/*
+npm-debug.log
