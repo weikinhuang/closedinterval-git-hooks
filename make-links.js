@@ -1,28 +1,27 @@
 "use strict";
 
-const child_process = require("child_process"),
+const childProcess = require("child_process"),
 	fs = require("fs"),
 	os = require("os"),
-	path = require("path"),
-	pkg = require("./package.json");
+	path = require("path");
 
-var hookMap = {
-	"pre-commit" : "pre-commit",
-	"post-checkout" : "post-checkout-merge",
-	"post-merge" : "post-checkout-merge"
-};
+var hooks = [
+	"pre-commit",
+	"post-checkout",
+	"post-merge"
+];
 
 // only link if not exists
-child_process.exec(
+childProcess.exec(
 	"git rev-parse --show-toplevel",
 	function(err, stdout) {
-		if (err || !stdout.trim()) {
+		var gitPath = (stdout || "").trim(),
+			hookPath;
+		if (err || !gitPath) {
 			console.error("Not a git repository.");
 			process.exit(1);
 			return;
 		}
-		var gitPath = stdout.trim(),
-			hookPath;
 		// fix cygwin path
 		if (os.platform() === "win32" && (/^\/[c-zC-Z]\//).test(gitPath)) {
 			gitPath = gitPath.replace(/^\/([c-zC-Z])\//, function(m, drive) {
@@ -30,24 +29,29 @@ child_process.exec(
 			});
 		}
 		gitPath = path.normalize(gitPath);
-		var srcRoot = gitPath === process.cwd()
-			? ""
-			: path.join("node_modules", pkg.name);
 		hookPath = path.join(gitPath, ".git/hooks");
-		Object.keys(hookMap).forEach(function(target) {
-			var source = hookMap[target];
-			fs.stat(path.join(hookPath, target), function(err) {
-				// we only care if file doesn't exist
-				if (!err) {
-					return;
-				}
-				// make symlink to git hooks
-				fs.symlink(
-					path.join("../../", srcRoot, "git-hooks", source),
-					path.join(hookPath, target),
-					function() {
+		hooks.forEach(function(target) {
+			fs.stat(path.join(hookPath, target), function(statErr) {
+				// backup the old hook
+				if (!statErr) {
+					// delete previous backup
+					try {
+						fs.unlinkSync(path.join(hookPath, target + ".bak"));
+					} catch (e) {
+						// empty
 					}
-				);
+					try {
+						fs.renameSync(
+							path.join(hookPath, target),
+							path.join(hookPath, target + ".bak")
+						);
+					} catch (e) {
+						// empty
+					}
+				}
+				// copy hook to target
+				fs.createReadStream(path.join(__dirname, "git-hooks", "hook-master"))
+					.pipe(fs.createWriteStream(path.join(hookPath, target)));
 			});
 		});
 	}

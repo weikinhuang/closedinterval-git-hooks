@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+# To install this you can either copy or symlink it to
+# $GIT_DIR/hooks
+
+GIT_ROOT="$(git rev-parse --show-toplevel)"
+NODE_BIN="$(which node 2>/dev/null)"
+if type cygpath >/dev/null 2>&1; then
+    GIT_ROOT="$(cygpath -wa "$GIT_ROOT")"
+	if [[ -e "c:/Program Files/iojs/iojs.exe" ]]; then
+		NODE_BIN="$(cygpath -u "c:/Program Files/iojs/iojs.exe")"
+	else
+		NODE_BIN="$(cygpath -u "c:/Program Files/nodejs/node.exe")"
+	fi
+fi
+export GIT_ROOT
+
+if ! type "$NODE_BIN" >/dev/null 2>&1; then
+	echo "JS Syntax check failed:"
+	echo "NodeJs binary does not exist or is not in path: node"
+	echo "You can bypass this hook with the --no-verify option"
+	exit 1
+fi
+
+CHECK_SCRIPT_PATH="./index.js"
+if [[ -e "./node_modules/closedinterval-git-hooks/index.js" ]]; then
+	CHECK_SCRIPT_PATH="./node_modules/closedinterval-git-hooks/index.js"
+fi
+
+"$NODE_BIN" "$CHECK_SCRIPT_PATH" "$(basename "$0")" "$@"
+exit $?
