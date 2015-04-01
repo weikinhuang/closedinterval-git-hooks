@@ -1,6 +1,6 @@
 "use strict";
 
-const childProcess = require("child_process"),
+var childProcess = require("child_process"),
 	fs = require("fs"),
 	os = require("os"),
 	path = require("path");

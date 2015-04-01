@@ -1,8 +1,8 @@
 "use strict";
 
-const Bluebird = require("bluebird"),
-	fs = require("fs"),
+var Bluebird = require("bluebird"),
 	fileHookRunner = require("./lib/file-hook-runner"),
+	fs = require("fs"),
 	path = require("path");
 
 var cliArgs = process.argv.slice(3),
