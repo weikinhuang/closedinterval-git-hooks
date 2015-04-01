@@ -15,14 +15,14 @@
     "postinstall": "node ./make-links"
   },
   "dependencies": {
-    "bluebird": "2.9.21",
+    "bluebird": "^2.9.21",
     "chalk": "^1.0.0",
-    "csslint": "0.10.0",
-    "eslint": "0.18.0",
-    "jscs": "1.12.0",
-    "jshint": "2.6.3",
-    "less": "2.4.0",
-    "minimatch": "2.0.4"
+    "csslint": "^0.10.0",
+    "eslint": "^0.18.0",
+    "jscs": "^1.12.0",
+    "jshint": "^2.6.3",
+    "less": "^2.4.0",
+    "minimatch": "^2.0.4"
   },
   "devDependencies": {}
 }
