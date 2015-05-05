@@ -19,7 +19,7 @@ childProcess.exec(
 			hookPath;
 		if (err || !gitPath) {
 			console.error("Not a git repository.");
-			process.exit(1);
+			process.exit(0);
 			return;
 		}
 		// fix cygwin path
