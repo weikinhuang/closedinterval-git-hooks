@@ -24,20 +24,20 @@
     "test",
     "development"
   ],
-  "version": "2.1.0",
+  "version": "2.1.1",
   "noBinLinks": true,
   "scripts": {
     "postinstall": "node ./make-links"
   },
   "dependencies": {
-    "bluebird": ">=2.9.24",
-    "chalk": ">=1.0.0",
+    "bluebird": "^3.0.5",
+    "chalk": "^1.0.0",
     "csslint": ">=0.10.0",
     "eslint": ">=0.21.0",
-    "jscs": ">=1.13.1",
+    "jscs": ">=2.5.1",
     "jshint": ">=2.7.0",
-    "less": ">=2.5.0",
-    "minimatch": ">=2.0.7"
+    "less": ">=2.5.3",
+    "minimatch": "^3.0.0"
   },
   "devDependencies": {}
 }
