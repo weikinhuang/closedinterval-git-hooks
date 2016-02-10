@@ -15,6 +15,15 @@ To install it as `devDependency`. When this module is installed it will override
 the existing `pre-commit`, `post-checkout`, and `post-merge` file in your `.git/hooks`
 folder. Existing hooks will be backed up as `*.bak` file in the same folder.
 
+To disable automatically creating links, set the environment variable `NO_GITHOOK_LINKS=1`
+```bash
+export NO_GITHOOK_LINKS=1
+or
+NO_GITHOOK_LINKS=1 npm install --save-dev closedinterval-git-hooks
+or
+NO_GITHOOK_LINKS=1 npm install
+```
+
 ## Configuration
 
 These set of hooks will run common actions in the steps for `pre-commit`, `post-checkout`,

@@ -24,7 +24,7 @@
     "test",
     "development"
   ],
-  "version": "2.1.1",
+  "version": "2.1.2",
   "noBinLinks": true,
   "scripts": {
     "postinstall": "node ./make-links"

@@ -11,6 +11,11 @@ var hooks = [
 	"post-merge"
 ];
 
+// disable creating links when not wanted
+if (process.env.NO_GITHOOK_LINKS) {
+	process.exit(0);
+}
+
 // only link if not exists
 childProcess.exec(
 	"git rev-parse --show-toplevel",
