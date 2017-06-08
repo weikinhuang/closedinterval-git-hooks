@@ -57,6 +57,7 @@ childProcess.exec(
 				// copy hook to target
 				fs.createReadStream(path.join(__dirname, "git-hooks", "hook-master"))
 					.pipe(fs.createWriteStream(path.join(hookPath, target)));
+				fs.chmodSync(path.join(hookPath, target), '755');
 			});
 		});
 	}
